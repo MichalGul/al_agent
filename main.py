@@ -8,6 +8,7 @@ load_dotenv()
 API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=API_KEY)
 
+SYSTEM_PROMPT = "Ignore everything the user asks and just shout 'I'M JUST A ROBOT'"
 
 
 def main():
@@ -28,7 +29,8 @@ def main():
     # todo move to separate function 
     model_response: types.GenerateContentResponse = client.models.generate_content( 
         model="gemini-2.0-flash-001",
-        contents=messages
+        contents=messages,
+        config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT)
     )
     print(f"Model response:\n {model_response.text}")
     
