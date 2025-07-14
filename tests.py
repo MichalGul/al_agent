@@ -1,4 +1,6 @@
 from functions.get_files_info import get_files_info, get_file_content
+from functions.write_file import write_file
+
 from functions.config import TRUNCATE_MESSAGE, MAX_CHARACTERS
 from parameterized import parameterized
 import unittest
@@ -21,7 +23,6 @@ class TestGetFilesInfo(unittest.TestCase):
 class TestGetFilesContent(unittest.TestCase):
 
 
-
     @parameterized.expand([("calculator", "main.py", "Calculator App"),
                             ("calculator", "pkg/calculator.py", "self.operators"),
                               ("calculator", "lorem.txt", "Lorem")])
@@ -38,6 +39,22 @@ class TestGetFilesContent(unittest.TestCase):
         # print(result)
         assert "Error" in result
 
+
+class TestWriteToFiles(unittest.TestCase):
+
+
+
+    @parameterized.expand([("calculator", "lorem1.txt", "wait, this isn't lorem ipsum", "Successfully wrote"),
+                            ("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet", "Successfully wrote")])
+    def test_write_valid(self, input1, input2, input3, expected):
+        result = write_file(input1, input2, input3)
+        print(result)
+        assert expected in result
+
+    def test_invalid_write(self):
+        result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+        print(result)
+        assert "Error" in result
 
 
 if __name__ == "__main__":
