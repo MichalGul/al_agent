@@ -1,5 +1,35 @@
 import os
 from functions.config import MAX_CHARACTERS, TRUNCATE_MESSAGE
+from google.genai import types
+
+schema_get_files_info = types.FunctionDeclaration(
+    name="get_files_info",
+    description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "directory": types.Schema(
+                type=types.Type.STRING,
+                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
+            ),
+        },
+    ),
+)
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Read file data specified by path, constrained to the working directory. Data read is limited to 10000 characters. All data beyond that is truncated.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file to read content from, relative to the working directory.",
+            ),
+        }
+    )
+)
+
 
 def get_files_info(working_directory, directory=None) -> str:
 

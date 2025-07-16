@@ -42,21 +42,21 @@ import unittest
 #         assert "Error" in result
 
 
-# class TestWriteToFiles(unittest.TestCase):
+class TestWriteToFiles(unittest.TestCase):
 
 
 
-#     @parameterized.expand([("calculator", "lorem1.txt", "wait, this isn't lorem ipsum", "Successfully wrote"),
-#                             ("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet", "Successfully wrote")])
-#     def test_write_valid(self, input1, input2, input3, expected):
-#         result = write_file(input1, input2, input3)
-#         print(result)
-#         assert expected in result
+    @parameterized.expand([("calculator", "lorem1.txt", "wait, this isn't lorem ipsum", "Successfully wrote"),
+                            ("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet", "Successfully wrote")])
+    def test_write_valid(self, input1, input2, input3, expected):
+        result = write_file(input1, input2, input3)
+        print(result)
+        assert expected in result
 
-#     def test_invalid_write(self):
-#         result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
-#         print(result)
-#         assert "Error" in result
+    def test_invalid_write(self):
+        result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+        print(result)
+        assert "Error" in result
 
 
 
