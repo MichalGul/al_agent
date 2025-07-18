@@ -27,26 +27,33 @@ def generate_content(client: genai.Client, messages :list, verbose: bool, user_p
         config=types.GenerateContentConfig(tools =[avaliable_functions], system_instruction=SYSTEM_PROMPT)
     )
 
-    if model_response.function_calls:
-        calling_message = " \n".join([f"{f_call.name} ({f_call.args})" for f_call in model_response.function_calls])
-        print(f"Calling function: {calling_message}")
-        # assume calling one function
-        function_call_result = call_function(function_call_part=model_response.function_calls[0], verbose=verbose)
-        try:
-            print(f"-> {function_call_result.parts[0].function_response.response}")
-        except:
-            raise Exception("Called Function response does not have result")
-            exit(1)
-
-    else:
-        print(f"Model response: {model_response.text} \n ")
-    
     if verbose:
         print(f"User prompt: {user_prompt}")
         print(f"Model metadata: \n Prompt tokens: {model_response.usage_metadata.prompt_token_count} \n Response tokens: {model_response.usage_metadata.candidates_token_count} \n")
 
         
+    if model_response.candidates:
+        for candidate in model_response.candidates:
+            messages.append(candidate.content)
 
+    if not model_response.function_calls:
+        print(f"Model response: \n {model_response.text} \n ")
+        return model_response.text
+
+    for function_call in model_response.function_calls:
+        calling_message = " \n".join([f"{function_call.name} ({function_call.args})"])
+        print(f"Calling function: {calling_message}")
+
+        function_call_result = call_function(function_call_part=function_call, verbose=verbose)
+
+        if (not function_call_result.parts or not function_call_result.parts[0].function_response):
+            raise Exception("empty function call result")
+
+        if verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
+        
+        messages.append(function_call_result)
+    
 
 def main():
     print("Hello from al-agent!")
@@ -67,7 +74,19 @@ def main():
         types.Content(role="user", parts=[types.Part(text=user_prompt)])
     ]
 
-    generate_content(client, messages, verbose_flag, user_prompt) 
+    MAX_ITERATIONS = 20
+    
+    for i in range(MAX_ITERATIONS):
+        try:
+            result = generate_content(client, messages, verbose_flag, user_prompt)
+            if result is not None:
+                print(result)
+                break
+
+        except Exception as e:
+            print(e)
+
+     
 
 
 
